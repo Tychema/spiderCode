@@ -58,9 +58,9 @@ if __name__ == '__main__':
                     albumName=album["name"]
                     print(str(k)+" "+str(artistId)+" "+str(artistName)+" "+str(songID)+" "+songName+" "+str(j["id"])+" "+str(albumID)+" "+str(albumName))
                     print(str(k)+" "+str(songID)+" "+songName+" "+str(j)+"\n")
-                    #with open(localDataWriteAdd+"z"+".txt","a+",encoding='utf-8') as f2:
-                        #f2.write(str(k)+" "+str(artistId)+" "+str(artistName)+" "+str(songID)+" "+songName+" "+str(j["id"])+" "+str(albumID)+" "+str(albumName)+"\n")
-                    with open(localDataWriteAdd+"n"+"context.txt","a+",encoding='utf-8') as f2:
+                    with open(localDataWriteAdd+"z"+".txt","a+",encoding='utf-8') as f2:
+                        f2.write(str(k)+" "+str(artistId)+" "+str(artistName)+" "+str(songID)+" "+songName+" "+str(j["id"])+" "+str(albumID)+" "+str(albumName)+"\n")
+                    with open(localDataWriteAdd+"test"+"context.txt","a+",encoding='utf-8') as f2:
                         f2.write(str(k)+" "+str(songID)+" "+songName+str(j)+"\n")
                     k=k+1
             except:
