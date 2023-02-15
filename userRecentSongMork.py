@@ -5,12 +5,15 @@ import datetime
 import random
 import time
 
-
+#模拟时间
+startTime = '2022-01-01 12:12:12'
+endTime = '2022-01-31 00:00:00'
 
 #本地路径
 userIDAddress="D:\\1论文\\爬虫\\data\\userID\\userID"
 userDetailAddress="D:\\1论文\\爬虫\\data\\userDetail\\"
 songsAddress="D:\\1论文\\爬虫\data\\songs\\"
+logsAdd="D:\\1论文\\爬虫\\data\\morkLogs\\1.txt"
 #歌曲比例
 #热门歌手热门歌曲（-1）占70%
 #其他编号占1%左右
@@ -56,18 +59,14 @@ def getUserID(startNum):
         return myUserID
 
 def getSongsDetail(startChar):
-    start_time = time.time()
     songsDetail=""
     with open(songsAddress + startChar + ".txt", "r",encoding="utf-8") as f1:
         randomLine = random.randint(0, 90000)
         for i in enumerate(f1):
             if list(i)[0]==randomLine:
-                end_time = time.time()
-                print("time cost:", float(end_time - start_time) * 1000.0, "ms")
                 return list(i)[1]
 
-startTime = '2022-01-01 12:12:12'
-endTime = '2022-12-30 00:00:00'
+
 
 #获取开始时间、结束时间和歌曲时长
 def getStartTimeAndEndTime():
@@ -86,13 +85,20 @@ def getStartTimeAndEndTime():
         playEndTime = playStartTime + dt
     return [playStartTime,playEndTime,dt]
 
+#模拟数据写入TXT
+def writeTXT(json):
+    with open(logsAdd,"a+",encoding='utf-8') as f1:
+        f1.write(str(json))
+    print()
+
+
 json = {'userId': '26159000', 'playStartTime': 1675662095361,'platEndTime':1675662095390, 'resourceType': 'SONG',
         'data': {'name': 'Moonlight', 'id': 26159000, 'pst': 0, 't': 0,
-                 'ar': [{'id': 42898, 'name': 'Rameses B', 'tns': [], 'alias': []}], 'alia': [], 'pop': 95, 'st': 0,
+                 'ar': {'id': 42898, 'name': 'Rameses B', 'tns': [], 'alias': []}, 'alia': [], 'pop': 95, 'st': 0,
                  'rt': '', 'fee': 8, 'v': 29, 'crbt': None, 'cf': '', 'al': {'id': 2400916, 'name': 'Inspire - EP',
                                                                              'tns': []}, 'dt': 343714,
                                                                              'a': None, 'cd': '1', 'no': 2,
-                 'rtUrl': None, 'ftype': 0, 'rtUrls': [], 'djId': 0, 'copyright': 2, 's_id': 0, 'mark': 270464,
+                 'rtUrl': None, 'ftype': 0, 'rtUrls': [], 'djId': 0, 'copyright': 2, 's_id': 0,
                  'originCoverType': 0, 'originSongSimpleData': None, 'single': 0, 'noCopyrightRcmd': None, 'mst': 9,
                  'cp': 743010, 'mv': 0, 'rtype': 0, 'rurl': None, 'publishTime': 1337702400007}, 'banned': False}
 
@@ -103,16 +109,31 @@ json = {'userId': '26159000', 'playStartTime': 1675662095361,'platEndTime':16756
 #dt 歌曲长度
 #data.name 歌曲名
 #data.id 歌曲ID
-#data.al.id
-#data.al.name
+#data.ar.id 歌手ID
+#data.ar.name 歌手名字
+#data.al.id 专辑ID
+#data.al.name 专辑名字
+
 if __name__ == '__main__':
     #参数是0-9用户ID是按这个划分的
     userID = getUserID(0)
     timeList=getStartTimeAndEndTime()
-    # randomEndTime = randomTimestamp(startTime, endTime)
-    # userID=getUserID(0)
-    # songsDetail=getSongsDetail("-1")
-    # songsDetailList=songsDetail.split(" ")
-    # songsName=list(songsDetailList)[4]
-    # json["data"]["name"]=list(songsDetailList)[4]
-    # print(json["data"]["name"])
+    songsDetail=getSongsDetail("-1")
+    songsDetailList=songsDetail.split(" ")
+    #0        1      2       3     4        5     6     7
+    #歌曲唯一id 歌手id 歌手name 歌曲id 歌曲name  歌曲id 专辑id 专辑名
+    artistID = list(songsDetailList)[1]
+    artistName=list(songsDetailList)[2]
+    songsID=list(songsDetailList)[3]
+    songsName=list(songsDetailList)[4]
+    songsName = list(songsDetailList)[6]
+    songsName = list(songsDetailList)[7]
+    json["data"]["ar"]["id"] = list(songsDetailList)[1]
+    json["data"]["ar"]["name"] = list(songsDetailList)[2]
+    json["data"]["id"] = str(list(songsDetailList)[3])
+    json["data"]["name"]=list(songsDetailList)[4]
+    json["data"]["al"]["id"] = str(list(songsDetailList)[6])
+    json["data"]["al"]["name"] = list(songsDetailList)[7]
+
+    #写入JSON
+    writeTXT(json)
