@@ -4,6 +4,12 @@
 import datetime
 import random
 import time
+#可更改参数
+part=2#分批文本
+#timeNow=1640966400
+timeNow=1641006085
+#间隔时间，越大数据越稀疏，越小数据越多越密集
+stepTime=20
 
 #模拟时间
 startTime = '2022-01-01 00:00:00'
@@ -13,7 +19,7 @@ endTime = '2022-01-31 00:00:00'
 userIDAddress="E:\\tychema\\1论文\\爬虫\\data\\userID\\userID"
 userDetailAddress="E:\\tychema\\1论文\\爬虫\\data\\userDetail\\"
 songsAddress="E:\\tychema\\1论文\\爬虫\\data\\songs\\"
-logsAdd="E:\\tychema\\1论文\\爬虫\\data\\morkLogs\\2022-01-01.txt"
+logsAdd="E:\\tychema\\1论文\\爬虫\\data\\morkLogs\\2022-01-01-"+part+".txt"
 #歌曲比例
 #热门歌手热门歌曲（-1）占70%
 #其他编号占1%左右
@@ -21,7 +27,7 @@ logsAdd="E:\\tychema\\1论文\\爬虫\\data\\morkLogs\\2022-01-01.txt"
 hotSongsRate=0.7
 otherSonsRate=0.01
 
-timeNow=1640966400
+
 #按时间递进获取时间
 def getsongTimes():
     rare=[50,30,20,1]
@@ -139,6 +145,7 @@ json = {'userId': '26159000', 'playStartTime': 1675662095361,'playEndTime':16756
 #data.al.name 专辑名字
 
 if __name__ == '__main__':
+    rare1 = [20, 40]
     while True:
         try:
             #参数是0-9用户ID是按这个划分的
@@ -158,14 +165,13 @@ if __name__ == '__main__':
                     print(e1)
                     time.sleep(60)
                 startTime=timeList[1]
-            rare=[20,40]
-            index=random_index(rare)
+            index=random_index(rare1)
             timeArray = time.localtime(timeNow)
             otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
             if int(otherStyleTime[11:13])>2 and int(otherStyleTime[11:13])<7:
-                timeNow = timeNow + random.randint(300)
+                timeNow = timeNow + random.randint(200,300)
             if index!=1:
-                timeNow=timeNow+1;
+                timeNow=timeNow+random.randint(3,stepTime);
             if timeNow>1643558400:
                 break
         except Exception as e2:
