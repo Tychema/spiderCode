@@ -6,20 +6,30 @@ import random
 import time
 
 #模拟时间
-startTime = '2022-01-01 12:12:12'
+startTime = '2022-01-01 00:00:00'
 endTime = '2022-01-31 00:00:00'
 
 #本地路径
-userIDAddress="D:\\1论文\\爬虫\\data\\userID\\userID"
-userDetailAddress="D:\\1论文\\爬虫\\data\\userDetail\\"
-songsAddress="D:\\1论文\\爬虫\data\\songs\\"
-logsAdd="D:\\1论文\\爬虫\\data\\morkLogs\\1.txt"
+userIDAddress="E:\\tychema\\1论文\\爬虫\\data\\userID\\userID"
+userDetailAddress="E:\\tychema\\1论文\\爬虫\\data\\userDetail\\"
+songsAddress="E:\\tychema\\1论文\\爬虫\\data\\songs\\"
+logsAdd="E:\\tychema\\1论文\\爬虫\\data\\morkLogs\\2022-01-01.txt"
 #歌曲比例
 #热门歌手热门歌曲（-1）占70%
 #其他编号占1%左右
 #每个编号共6w首随机
 hotSongsRate=0.7
 otherSonsRate=0.01
+
+timeNow=1640966400
+#按时间递进获取时间
+def getsongTimes():
+    rare=[50,30,20,1]
+    times=[0,5,10,15,30]
+    index=random_index(rare)
+    return random.randint(times[index],times[index+1])
+
+
 #生成随机时间戳
 def strTimeProp(start, end, prop, frmt):
     stime = time.mktime(time.strptime(start, frmt))
@@ -54,12 +64,11 @@ def getUserID(startNum):
         for i in range(randomLine):
             line = f1.readline()
         if not line:
-            return -1;
+            return -1
         myUserID = str(line.strip())
         return myUserID
 
 def getSongsDetail(startChar):
-    songsDetail=""
     with open(songsAddress + startChar + ".txt", "r",encoding="utf-8") as f1:
         randomLine = random.randint(0, 90000)
         for i in enumerate(f1):
@@ -69,9 +78,9 @@ def getSongsDetail(startChar):
 
 
 #获取开始时间、结束时间和歌曲时长
-def getStartTimeAndEndTime():
+def getStartTimeAndEndTime(startTime):
     # 时间戳生成时间
-    playStartTime = randomTimestamp(startTime, endTime)
+    playStartTime = startTime
     rate = [50, 400, 400, 25, 1]
     RateTime = [120, 180, 240, 270, 300, 420]
     index1 = random_index(rate)
@@ -85,14 +94,29 @@ def getStartTimeAndEndTime():
         playEndTime = playStartTime + dt
     return [playStartTime,playEndTime,dt]
 
+def setJson(songsDetailList,userId,playStartTime,playEndTime,dt):
+    #0        1      2       3     4        5     6     7
+    #歌曲唯一id 歌手id 歌手name 歌曲id 歌曲name  歌曲id 专辑id 专辑名
+    json["data"]["ar"]["id"] = list(songsDetailList)[1]
+    json["data"]["ar"]["name"] = list(songsDetailList)[2]
+    json["data"]["id"] = str(list(songsDetailList)[3])
+    json["data"]["name"] = list(songsDetailList)[4]
+    json["data"]["al"]["id"] = str(list(songsDetailList)[6])
+    json["data"]["al"]["name"] = list(songsDetailList)[7]
+    json["userId"]=str(userId)
+    json["playStartTime"] = str(playStartTime)
+    json["playEndTime"] = str(playEndTime)
+    json["dt"] = str(dt)
+    return json
+
+
 #模拟数据写入TXT
 def writeTXT(json):
     with open(logsAdd,"a+",encoding='utf-8') as f1:
-        f1.write(str(json))
-    print()
+        f1.write(str(json)+"\n")
 
 
-json = {'userId': '26159000', 'playStartTime': 1675662095361,'platEndTime':1675662095390, 'resourceType': 'SONG',
+json = {'userId': '26159000', 'playStartTime': 1675662095361,'playEndTime':1675662095390, 'resourceType': 'SONG',
         'data': {'name': 'Moonlight', 'id': 26159000, 'pst': 0, 't': 0,
                  'ar': {'id': 42898, 'name': 'Rameses B', 'tns': [], 'alias': []}, 'alia': [], 'pop': 95, 'st': 0,
                  'rt': '', 'fee': 8, 'v': 29, 'crbt': None, 'cf': '', 'al': {'id': 2400916, 'name': 'Inspire - EP',
@@ -115,25 +139,35 @@ json = {'userId': '26159000', 'playStartTime': 1675662095361,'platEndTime':16756
 #data.al.name 专辑名字
 
 if __name__ == '__main__':
-    #参数是0-9用户ID是按这个划分的
-    userID = getUserID(0)
-    timeList=getStartTimeAndEndTime()
-    songsDetail=getSongsDetail("-1")
-    songsDetailList=songsDetail.split(" ")
-    #0        1      2       3     4        5     6     7
-    #歌曲唯一id 歌手id 歌手name 歌曲id 歌曲name  歌曲id 专辑id 专辑名
-    artistID = list(songsDetailList)[1]
-    artistName=list(songsDetailList)[2]
-    songsID=list(songsDetailList)[3]
-    songsName=list(songsDetailList)[4]
-    songsName = list(songsDetailList)[6]
-    songsName = list(songsDetailList)[7]
-    json["data"]["ar"]["id"] = list(songsDetailList)[1]
-    json["data"]["ar"]["name"] = list(songsDetailList)[2]
-    json["data"]["id"] = str(list(songsDetailList)[3])
-    json["data"]["name"]=list(songsDetailList)[4]
-    json["data"]["al"]["id"] = str(list(songsDetailList)[6])
-    json["data"]["al"]["name"] = list(songsDetailList)[7]
-
-    #写入JSON
-    writeTXT(json)
+    while True:
+        try:
+            #参数是0-9用户ID是按这个划分的
+            userID = getUserID(0)
+            #决定该用户听了多少首歌
+            songTimes=getsongTimes()
+            startTime = timeNow
+            for i in range(songTimes):
+                timeList=getStartTimeAndEndTime(startTime)
+                songsDetail=getSongsDetail("-1")
+                songsDetailList=songsDetail.split(" ")
+                json=setJson(songsDetailList,userID,startTime,timeList[1],timeList[2])
+                #写入JSON
+                try:
+                    writeTXT(json)
+                except Exception as e1:
+                    print(e1)
+                    time.sleep(60)
+                startTime=timeList[1]
+            rare=[20,40]
+            index=random_index(rare)
+            timeArray = time.localtime(timeNow)
+            otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
+            if int(otherStyleTime[11:13])>2 and int(otherStyleTime[11:13])<7:
+                timeNow = timeNow + random.randint(300)
+            if index!=1:
+                timeNow=timeNow+1;
+            if timeNow>1643558400:
+                break
+        except Exception as e2:
+            print(e2)
+            time.sleep(60)

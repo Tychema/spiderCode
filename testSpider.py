@@ -1,4 +1,5 @@
 import json
+import time
 import urllib.request
 userIdNum=[300000000,310000000,320000000,330000000,340000000,350000000,360000000,370000000,380000000,390000000]
 url = "http://localhost:3000"
@@ -40,6 +41,7 @@ urlParameter2 ="&offset="     #offset
 #     print(json.loads(content2))
 
 if __name__ == '__main__':
-    response1 = urllib.request.urlopen(url + recentSongs)
-    content1 = response1.read().decode('utf-8')
-    print(json.loads(content1))
+    timeNow=1381419600
+    timeArray = time.localtime(timeNow)
+    otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
+    print(otherStyleTime[11:13])
