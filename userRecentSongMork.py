@@ -129,7 +129,7 @@ json = {'userId': '26159000', 'playStartTime': 1675662095361,'playEndTime':16756
 
 #userId 用户ID
 #playStartTime 播放开始时间
-#playStartTime 播放结束时间
+#playEndTime 播放结束时间
 #dt 歌曲长度
 #data.name 歌曲名
 #data.id 歌曲ID
